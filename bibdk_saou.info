@@ -7,4 +7,5 @@ package = Bibliotek.dk
 files[] = bibdk_saou.module
 
 dependencies[] = open_saou
+dependencies[] = bibdk_saou_field
 
