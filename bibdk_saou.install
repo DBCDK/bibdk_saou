@@ -70,3 +70,10 @@ function bibdk_saou_disable() {
     field_delete_field($field_name);
   }
 }
+
+/**
+ * Remove field bibdk_saou_link. the link is implemented with a hook instead
+ */
+function bibdk_saou_update_7002() {
+  field_delete_field('bibdk_saou_link');
+}
