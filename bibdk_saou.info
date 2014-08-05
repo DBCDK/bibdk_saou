@@ -5,6 +5,7 @@ version = 7.x-0.1
 package = Bibliotek.dk
 
 files[] = bibdk_saou.module
+files[] = bibdk_saou.field.inc
 
 dependencies[] = open_saou
 dependencies[] = bibdk_saou_field
