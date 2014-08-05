@@ -11,16 +11,14 @@ function bibdk_saou_ding_entity_fields() {
   $display_full = array(
     'default' => array(
       'label' => 'hidden',
-      'type' => 'hidden',
-    ),
-    'reservation' => array(
-      'type' => 'hidden',
+      'type' => 'default',
     ),
     'full' => array(
       'label' => 'hidden',
-      'type' => 'hidden',
+      'type' => 'default',
     ),
   );
+
   return array(
     'bibdk_saou_link' => array(
       'field' => array(
@@ -45,7 +43,6 @@ function bibdk_saou_ding_entity_fields() {
  */
 function bibdk_saou_requirements($phase) {
   $requirements = array();
-
   if ($phase == 'runtime') {
     $url = variable_get('open_saou_url');
     if ( !isset($url) ) {
@@ -74,6 +71,6 @@ function bibdk_saou_disable() {
 /**
  * Remove field bibdk_saou_link. the link is implemented with a hook instead
  */
-function bibdk_saou_update_7002() {
+/*function bibdk_saou_update_7002() {
   field_delete_field('bibdk_saou_link');
-}
+}*/
