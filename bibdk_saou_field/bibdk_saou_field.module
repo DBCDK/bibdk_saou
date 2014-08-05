@@ -5,6 +5,8 @@
  * see http://drupal.org/node/1285540
  */
 
+
+
 /**
  * Implements hook_field_info().
  */
@@ -13,7 +15,7 @@ function bibdk_saou_field_field_info() {
     'bibdk_saou_link' => array(
       'label' => t('SOAU link'),
       'description' => t('Link to ressource with restricted access'),
-      'default_widget' => 'hidden',
+      'default_widget' => 'text_textfield',
       'default_formatter' => 'bibdk_saou_link_default',
       'no_ui' => TRUE,
     ),
