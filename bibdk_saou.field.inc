@@ -23,15 +23,14 @@ function bibdk_saou_field_formatter_info() {
   );
 }
 
-
 /**
  * Implements hook_field_formatter_view().
  */
 function bibdk_saou_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
   foreach ($items as $delta => $item) {
-    // check if entity has fields with restricted access
-    if( $entity->getRestrictedUse() === 'restrictedAccess') {
+    // check if entity has fields with restricted access and is a link
+    if( $entity->getRestrictedUse() === 'restrictedAccess' && $entity->getRequestMethod() == 'link') {
       $link = bibdk_soau_field_get_link($entity);
       $element[$delta] = $link;
     }
@@ -40,9 +39,12 @@ function bibdk_saou_field_formatter_view($entity_type, $entity, $field, $instanc
 }
 
 function bibdk_soau_field_get_link($entity){
-  $message = bibdk_saou_get_user_message();
+  $message = bibdk_saou_get_user_message($entity);
   $link = array(
-    'link'=>array('message' => $message),
+    'link'=>array(
+      'message' => $message,
+      'text' => t($entity->getRestrictedUse(),array(),array('context'=>'bibdk_saou')),
+    ),
   );
   return theme('bibdk_saou_link',$link);
 
@@ -61,13 +63,13 @@ function bibdk_soau_field_get_link($entity){
   return $link;
 }
 
-function bibdk_saou_get_user_message(){
+function bibdk_saou_get_user_message($entity){
   if(!ding_user_is_provider_user()){
     return bibdk_saou_link_to_login();
   }
 }
 
-function bibdk_saou_link_to_login(){
+function bibdk_saou_link_to_login($entity){
   $message = t('saou_log_in_to_accesss_ressource',array(),array('context'=>'bibdk_saou'));
   $path = 'user/login';
   $link = array(

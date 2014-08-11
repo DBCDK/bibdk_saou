@@ -13,3 +13,47 @@ function bibdk_saou_theme($existing, $type, $theme, $path){
     )
   );
 }
+
+/**
+ * Implements hook_menu
+ * landing page for saou ajax request
+ */
+function bibdk_saou_menu(){
+  $items['saou'] = array(
+    'page callback' => 'bibdk_saou_ajax',
+    'access callback' => TRUE,
+    //'page arguments' => array(1, 2),
+  );
+  return $items;
+}
+
+function bibdk_saou_ajax($pid=NULL, $url=NULL){
+
+  // for now hardcode pid
+  $pid = '870970-basis:42518891';
+
+  //use case: pid starts with 870970-basis and no relationurl is given
+  if(strpos($pid, '870970-basis') === 0 && empty($url)){
+    // use FetchLicenseByPid method
+    // get order agency for request
+    $agency = bibdk_saou_get_order_agency();
+
+    $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
+    $response = open_saou_FetchLicenseByPid($pid,$agencyAndUserIds,  $agency->getAgencyId());
+    return 'HEST';
+  }
+}
+
+function bibdk_saou_get_order_agency(){
+  // pre: user is logged in or we wouldn't be here
+  $agencies = array();
+  if(module_exists('bibdk_favourite')){
+    $agencies = bibdk_favourite_get_favourites();
+  }
+  if(empty($agencies)){
+    return FALSE;
+  }
+  // first agency is order-agency
+  $agency = reset($agencies);
+  return $agency;
+}
