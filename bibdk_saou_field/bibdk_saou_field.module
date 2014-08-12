@@ -15,7 +15,7 @@ function bibdk_saou_field_field_info() {
     'bibdk_saou_link' => array(
       'label' => t('SOAU link'),
       'description' => t('Link to ressource with restricted access'),
-      'default_widget' => 'text_textfield',
+      'default_widget' => 'hidden',
       'default_formatter' => 'bibdk_saou_link_default',
       'no_ui' => TRUE,
     ),
