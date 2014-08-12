@@ -6,7 +6,10 @@ package = Bibliotek.dk
 
 files[] = bibdk_saou.module
 files[] = bibdk_saou.field.inc
+files[] = lib/SaouResponse_class.php
+files[] = bibdk_saou.ajax.inc
 
 dependencies[] = open_saou
 dependencies[] = bibdk_saou_field
+
 
