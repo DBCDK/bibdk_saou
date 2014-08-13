@@ -48,7 +48,12 @@ function bibdk_saou_ajax_fetchLicensByPid($pid){
     }
     else{
       // this is an error from waou service.
-      return array('error'=>'no link to proxy');
+      $message = 'internal error: no link to proxy';
+      $output = bibdk_saou_field_get_element_to_toggle($message);
+      bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
+      $html = drupal_render($output);
+      $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
+      return $output;
     }
   }
   else{
