@@ -15,7 +15,7 @@
 
   Drupal.bibdkGetSaouRessource = function(ressource){
     var link = ressource;
-    link.append('<span class="ajax-progress"><span class="throbber"></span></span>');
+    link.append('<span class="ajax-progress"><span class="throbber" style="margin-top:-3px"></span></span>');
     var pid = link.attr('data-pid');
     var url = link.attr('data-url');
     var destination = link.attr('href');
