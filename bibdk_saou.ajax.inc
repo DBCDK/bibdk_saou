@@ -8,9 +8,9 @@
 function bibdk_saou_ajax($pid=NULL, $url=NULL){
   //print_r(func_get_args());
   // for now hardcode pid
-  $pid = '810010-katalog:008202024';
+ // $pid = '810010-katalog:008202024';
 
- // $pid = $_POST['pid'];
+  $pid = $_POST['pid'];
   $url = isset($_POST['url']) ? $_POST['url'] : NULL;
 
 
