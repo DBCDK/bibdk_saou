@@ -8,9 +8,9 @@
 function bibdk_saou_ajax($pid=NULL, $url=NULL){
   //print_r(func_get_args());
   // for now hardcode pid
- // $pid = '870970-basis:22703188';
+  $pid = '810010-katalog:008202024';
 
-  $pid = $_POST['pid'];
+ // $pid = $_POST['pid'];
   $url = isset($_POST['url']) ? $_POST['url'] : NULL;
 
 
@@ -29,12 +29,18 @@ function bibdk_saou_ajax($pid=NULL, $url=NULL){
   elseif(strpos($pid, '870970-basis') === 0 && !empty($url)){
     // use fetchLicenseByUrl method
     // @TDOO implement.
+    // we need an axeample
+  }
+  else{
+    // default behoviour
+    $output = bibdk_saou_ajax_fetchLicensByPid($pid);
+    drupal_json_output($output);
+    drupal_exit();
   }
 }
 
 function bibdk_saou_ajax_fetchLicensByPid($pid){
   $agency = bibdk_saou_get_order_agency();
-
   $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
   $response = open_saou_FetchLicenseByPid($pid,$agencyAndUserIds,  $agency->getAgencyId());
   $saou = new SaouResponse($response);
