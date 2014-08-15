@@ -88,10 +88,9 @@ function bibdk_saou_field_get_message_link($entity){
     '#options' => array(
       'attributes' => array(
         'data-pid' => $entity->id,
-        'class' => array('soau-ressource-link','dropdown-toggle'),
+        'class' => array('dropdown-toggle'),
         'id' => 'bibdk_saou_'.$entity->id,
       ),
-
       'html' => FALSE,
     ),
   );
