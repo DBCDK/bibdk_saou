@@ -1,4 +1,4 @@
-cd pocasdfasfasdfasfasdf<?php
+<?php
 /** Class to handle response from saou webservice.
  * Basically you get two kinds of responses
  *
