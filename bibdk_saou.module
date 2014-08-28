@@ -30,3 +30,16 @@ function bibdk_saou_get_order_agency(){
   $agency = reset($agencies);
   return $agency;
 }
+
+/** get a single manifestation via openformat
+ * @param $pid
+ * return manifestation
+ */
+function bibdk_saou_get_manifestation($pid){
+  $result = ting_openformat_get_single($pid);
+  $work = reset($result)->getManifestations();
+  $manifestation = reset($work);
+
+  return $manifestation;
+
+}
