@@ -7,6 +7,9 @@
  */
 function bibdk_saou_ajax($pid=NULL, $url=NULL){
   $pid = $_POST['pid'];
+
+ // $pid = '810010-katalog:008202024 ';
+
   $url = isset($_POST['url']) ? $_POST['url'] : NULL;
   //use case: pid starts with 870970-basis and no relationurl is given
   if(strpos($pid, '870970-basis') === 0 && empty($url)){
@@ -72,12 +75,26 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
 function bibdk_saou_get_output_by_permission($saou, $pid){
   $permission = $saou->get_remoteUserAccess();
   if(!isset($permission)){
+
+    // get the manifestation to display default link
+    $manifestation = bibdk_saou_get_manifestation($pid);
+    $txt = $manifestation->getInfotext();
+    $url = $manifestation->getSingleAccessUrl();
+
+    $value['accessUrl'] = current($url);
+    $value['accessUrlDisplay'] =  t('bibdk_saou_no_license',array(),array('context'=>'bibdk_saou'));
+
+    $element[] = $value;
+    $link = _ting_openformat_parse_element($element);
+
+
     // no licenseinfo - permission is NULL
-    $message =  t('bibdk_saou_no_license_for_library',array(),array('context'=>'bibdk_saou'));
+    $message = $link;
     $output = bibdk_saou_field_get_element_to_toggle($message);
     bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
     $html = drupal_render($output);
     $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
+   // $output = array('error'=>$markup, 'selector' => bibdk_saou_field_pid_to_selector($pid));
     return $output;
   }
   if($permission){
