@@ -7,10 +7,9 @@
  */
 function bibdk_saou_ajax($pid=NULL, $url=NULL){
   $pid = $_POST['pid'];
-
- // $pid = '810010-katalog:008202024 ';
-
+//  $pid = '870970-basis:42518891';
   $url = isset($_POST['url']) ? $_POST['url'] : NULL;
+
   //use case: pid starts with 870970-basis and no relationurl is given
   if(strpos($pid, '870970-basis') === 0 && empty($url)){
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
@@ -23,6 +22,7 @@ function bibdk_saou_ajax($pid=NULL, $url=NULL){
     drupal_exit();
   }
   else{
+
     // default behoviour
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
     drupal_json_output($output);
@@ -38,8 +38,22 @@ function bibdk_saou_ajax($pid=NULL, $url=NULL){
 function bibdk_saou_fetchLicenseByUrl($pid, $url){
   $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
   $response = open_saou_FetchLicenseByUrl($pid, $url, $agencyAndUserIds,  $agencyId);
-  $saou = new SaouResponse($response);
+  $saou = bibdk_saou_check_saou_response($response);
   return bibdk_saou_get_output_by_permission($saou, $pid);
+}
+
+/** Check response. If ok create a responseobject if not initialize with empty object
+ * @param $response
+ * @return SaouResponse
+ */
+function bibdk_saou_check_saou_response($response){
+  if($response){
+    $saou = new SaouResponse($response);
+  }
+  else{
+    $saou = new SaouResponse(new stdClass());
+  }
+  return $saou;
 }
 
 /** Dp fetchLicenseByPid request, and pass response to output function.
@@ -49,7 +63,7 @@ function bibdk_saou_fetchLicenseByUrl($pid, $url){
 function bibdk_saou_ajax_fetchLicensByPid($pid){
   $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
   $response = open_saou_FetchLicenseByPid($pid,$agencyAndUserIds,  $agencyId);
-  $saou = new SaouResponse($response);
+  $saou = bibdk_saou_check_saou_response($response);
   return bibdk_saou_get_output_by_permission($saou, $pid);
 }
 
@@ -60,9 +74,13 @@ function bibdk_saou_ajax_fetchLicensByPid($pid){
  * @return array agencyAndUserId => [agencyId, userId]
  */
 function bibdk_saout_get_agency_and_userids(&$agencyId){
+  $agencyAndUserIds = array();
   $agency = bibdk_saou_get_order_agency();
-  $agencyId = $agency->getAgencyId();
-  $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
+  if(!empty($agency)){
+    $agencyId = $agency->getAgencyId();
+    $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
+
+  }
   return $agencyAndUserIds;
 }
 
@@ -144,9 +162,10 @@ function bibdk_saou_remove_hidden_class(array &$classes){
  * @return string,html as ouptput by drupal_render
  */
 function bibdk_saou_ajax_get_proxylink($link, $pid){
+  $message =  t('bibdk_saou_click_here_for_access',array(),array('context'=>'bibdk_saou'));
   $proxy_link = array(
     '#theme' => 'link',
-    '#text' => $link,
+    '#text' => $message,
     '#path' => $link,
     '#options' => array(
       'attributes' => array('target'=>'_blank', 'id' => bibdk_saou_field_pid_to_selector($pid)),
