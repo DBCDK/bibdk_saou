@@ -145,8 +145,7 @@ function bibdk_saou_link_to_soau_ressource($entity){
   if(empty($uri)){
     $uri = $entity->getRelationUri();
   }
-
-  dpm($uri);
+  
   $link = array(
     '#theme' => 'link',
     '#text' => $message,
