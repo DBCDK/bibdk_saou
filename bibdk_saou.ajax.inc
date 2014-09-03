@@ -6,8 +6,8 @@
  * @param null $url
  */
 function bibdk_saou_ajax($pid=NULL, $url=NULL){
+  //$pid = '870970-basis:42518891';
   $pid = $_POST['pid'];
-//  $pid = '870970-basis:42518891';
   $url = isset($_POST['url']) ? $_POST['url'] : NULL;
 
   //use case: pid starts with 870970-basis and no relationurl is given
@@ -22,7 +22,6 @@ function bibdk_saou_ajax($pid=NULL, $url=NULL){
     drupal_exit();
   }
   else{
-
     // default behoviour
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
     drupal_json_output($output);
@@ -91,7 +90,8 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
  * @return array, Render array az expected by drupal_render
  */
 function bibdk_saou_get_output_by_permission($saou, $pid){
-  $permission = $saou->get_remoteUserAccess();
+  $permission = $saou->getlicenseInfo();
+  //$permission = $saou->get_remoteUserAccess();
   if(!isset($permission)){
 
     // get the manifestation to display default link
@@ -118,9 +118,18 @@ function bibdk_saou_get_output_by_permission($saou, $pid){
   if($permission){
     // permission is ok
     $link = $saou->get_proxyLink();
-    if($link){
-      $output = bibdk_saou_ajax_get_proxylink($link, $pid);
+    $remote_user_access = $saou->get_remoteUserAccess();
+    if($link && $remote_user_access){
+      $output = bibdk_saou_ajax_get_proxylink($link, $pid, $message);
       return array('redirect'=>$output,'selector' => bibdk_saou_field_pid_to_selector($pid),'error'=>'');
+    }
+    elseif($link && empty($remote_user_access)) {
+      $message = t('bibdk_saou_walkin_access',array(),array('context'=>'bibdk_saou'));
+      $output = bibdk_saou_field_get_element_to_toggle($message);
+      bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
+      $html = drupal_render($output);
+      $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
+      return $output;
     }
     else{
       // this is an error from waou service.
