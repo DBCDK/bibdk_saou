@@ -6,7 +6,6 @@
  * @param null $url
  */
 function bibdk_saou_ajax($pid=NULL, $url=NULL){
-  //$pid = '870970-basis:42518891';
   $pid = $_POST['pid'];
   $url = isset($_POST['url']) ? $_POST['url'] : NULL;
 
@@ -38,7 +37,7 @@ function bibdk_saou_fetchLicenseByUrl($pid, $url){
   $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
   $response = open_saou_FetchLicenseByUrl($pid, $url, $agencyAndUserIds,  $agencyId);
   $saou = bibdk_saou_check_saou_response($response);
-  return bibdk_saou_get_output_by_permission($saou, $pid);
+  return bibdk_saou_get_output_by_permission($saou, $pid, $url);
 }
 
 /** Check response. If ok create a responseobject if not initialize with empty object
@@ -78,7 +77,6 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
   if(!empty($agency)){
     $agencyId = $agency->getAgencyId();
     $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
-
   }
   return $agencyAndUserIds;
 }
@@ -89,7 +87,7 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
  * @param string $pid
  * @return array, Render array az expected by drupal_render
  */
-function bibdk_saou_get_output_by_permission($saou, $pid){
+function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
   $permission = $saou->getlicenseInfo();
   //$permission = $saou->get_remoteUserAccess();
   if(!isset($permission)){
@@ -117,7 +115,12 @@ function bibdk_saou_get_output_by_permission($saou, $pid){
   }
   if($permission){
     // permission is ok
-    $link = $saou->get_proxyLink();
+    if(!empty($url)){
+        $link = $url;
+      }
+    else{
+      $link = $saou->get_proxyLink();
+    }
     $remote_user_access = $saou->get_remoteUserAccess();
     if($link && $remote_user_access){
       $output = bibdk_saou_ajax_get_proxylink($link, $pid, $message);

@@ -141,8 +141,12 @@ function bibdk_saou_field_get_element_to_toggle($message){
 function bibdk_saou_link_to_soau_ressource($entity){
   $message = t($entity->getRestrictedUse(),array(),array('context'=>'bibdk_saou'));
   $path = 'saou/ajax';
-  $uri = $entity->getRelationUri();
+  $uri = $entity->getRemoteAccess();
+  if(empty($uri)){
+    $uri = $entity->getRelationUri();
+  }
 
+  dpm($uri);
   $link = array(
     '#theme' => 'link',
     '#text' => $message,
