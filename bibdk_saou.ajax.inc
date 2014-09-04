@@ -7,7 +7,11 @@
  */
 function bibdk_saou_ajax($pid=NULL, $url=NULL){
   $pid = $_POST['pid'];
-  $url = isset($_POST['url']) ? $_POST['url'] : NULL;
+  $url = $_POST['url'];
+
+  if($url == 'NONE'){
+    $url = NULL;
+  }
 
   //use case: pid starts with 870970-basis and no relationurl is given
   if(strpos($pid, '870970-basis') === 0 && empty($url)){
@@ -115,12 +119,8 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
   }
   if($permission){
     // permission is ok
-    if(!empty($url)){
-        $link = $url;
-      }
-    else{
-      $link = $saou->get_proxyLink();
-    }
+    $link = $saou->get_proxyLink();
+
     $remote_user_access = $saou->get_remoteUserAccess();
     if($link && $remote_user_access){
       $output = bibdk_saou_ajax_get_proxylink($link, $pid, $message);
