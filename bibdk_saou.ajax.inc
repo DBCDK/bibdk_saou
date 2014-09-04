@@ -80,6 +80,9 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
   $agency = bibdk_saou_get_order_agency();
   if(!empty($agency)){
     $agencyId = $agency->getAgencyId();
+    // this is the correct array
+    //$agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
+    // this is a hack to make filmstriben behave
     $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>''));
   }
   return $agencyAndUserIds;
@@ -119,7 +122,10 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
   }
   if($permission){
     // permission is ok
-    $link = $saou->get_proxyLink();
+    $proxy = $saou->get_proxyLink();
+    if(!empty($proxy)){
+      $link = $proxy;
+    }
 
     $remote_user_access = $saou->get_remoteUserAccess();
     if($link && $remote_user_access){
