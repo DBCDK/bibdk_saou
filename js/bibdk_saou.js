@@ -24,7 +24,8 @@
       url:destination,
       type: 'POST',
       data: {
-        pid: pid
+        pid: pid,
+        url: url
       },
       dataType: 'json',
       success: Drupal.bibdkHandleSaou
