@@ -80,7 +80,7 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
   $agency = bibdk_saou_get_order_agency();
   if(!empty($agency)){
     $agencyId = $agency->getAgencyId();
-    $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
+    $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>''));
   }
   return $agencyAndUserIds;
 }
