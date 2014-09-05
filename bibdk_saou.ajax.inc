@@ -12,7 +12,6 @@ function bibdk_saou_ajax($pid=NULL, $url=NULL){
   if($url == 'NONE'){
     $url = NULL;
   }
-
   //use case: pid starts with 870970-basis and no relationurl is given
   if(strpos($pid, '870970-basis') === 0 && empty($url)){
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
@@ -97,7 +96,7 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
 function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
   $permission = $saou->getlicenseInfo();
   //$permission = $saou->get_remoteUserAccess();
-  if(!isset($permission)){
+  if(empty($permission)){
 
     // get the manifestation to display default link
     $manifestation = bibdk_saou_get_manifestation($pid);
@@ -109,7 +108,6 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
 
     $element[] = $value;
     $link = _ting_openformat_parse_element($element);
-
 
     // no licenseinfo - permission is NULL
     $message = $link;
@@ -129,7 +127,7 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
 
     $remote_user_access = $saou->get_remoteUserAccess();
     if($link && $remote_user_access){
-      $output = bibdk_saou_ajax_get_proxylink($link, $pid, $message);
+      $output = bibdk_saou_ajax_get_proxylink($link, $pid);
       return array('redirect'=>$output,'selector' => bibdk_saou_field_pid_to_selector($pid),'error'=>'');
     }
     elseif($link && empty($remote_user_access)) {
@@ -141,7 +139,7 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
       return $output;
     }
     else{
-      // this is an error from waou service.
+      // this is an error from saou service.
       $message = 'internal error: no link to proxy';
       $output = bibdk_saou_field_get_element_to_toggle($message);
       bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
@@ -149,15 +147,6 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
       $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
       return $output;
     }
-  }
-  else{
-    // permission is FALSE
-    $message =  t('bibdk_saou_no_remote_access_for_library',array(),array('context'=>'bibdk_saou'));
-    $output = bibdk_saou_field_get_element_to_toggle($message);
-    bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
-    $html = drupal_render($output);
-    $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
-    return $output;
   }
 }
 
