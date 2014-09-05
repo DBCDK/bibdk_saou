@@ -11,6 +11,7 @@
 class SaouResponse{
   private $response;
   private $licenseInfo;
+  private $errorCode;
 
   /** Constructor
    * @param stdClass $response; Response from SAOU webservice
@@ -19,6 +20,11 @@ class SaouResponse{
     $this->response = $response;
     $this->licenseInfo = isset($response->Licenses->License->licenseInfo) ?
     $response->Licenses->License->licenseInfo : NULL;
+    $this->errorCode = $response->Licenses->ResponseStatus->responseCode;
+  }
+
+  public function get_response(){
+    return $this->response;
   }
 
   /** Get info for licenses
@@ -47,5 +53,9 @@ class SaouResponse{
    **/
   public function get_proxyLink(){
     return isset ($this->response->Licenses->License->linkResponseType->proxyLink) ? $this->response->Licenses->License->linkResponseType->proxyLink : FALSE;
+  }
+
+  public function get_responseCode(){
+    return $this->errorCode;
   }
 }
