@@ -41,7 +41,9 @@ function bibdk_saou_field_formatter_view($entity_type, $entity, $field, $instanc
   return $element;
 }
 
-// @TODO make message a link to favourites
+/** get and check favourites for saou request.
+ * @return string: empty if fvaourite is found and data complete; errormessage if not
+ */
 function bibdk_soau_field_check_favourites() {
   $favourites = bibdk_favourite_get_favourites();
   $message = '';
@@ -59,6 +61,10 @@ function bibdk_soau_field_check_favourites() {
   return $message;
 }
 
+/** get a link to ressource.
+ * @param $entity; the entity to handle
+ * @return string; html to display
+ */
 function bibdk_soau_field_get_link($entity) {
   $message = bibdk_saou_get_user_message();
 
@@ -73,6 +79,11 @@ function bibdk_soau_field_get_link($entity) {
   return drupal_render($output);
 }
 
+/** Get a render array with link to saou ressorce
+ * @param $entity; the entity to handle
+ * @param $message; text for the link
+ * @return array; render array as expected by drupal_render
+ */
 function bibdk_saou_field_get_link_and_toggle_element($entity, $message) {
   $output['wrapper'] = bibdk_saou_field_get_dropdown_wrapper();
   $output['wrapper']['link'] = bibdk_saou_field_get_message_link($entity);
@@ -81,6 +92,11 @@ function bibdk_saou_field_get_link_and_toggle_element($entity, $message) {
   return $output;
 }
 
+/** get a render array with no link to reesource. this is to diplay messages
+ * for users not logged in or incomplete userdata in favourites
+ * @param $entity
+ * @return array
+ */
 function bibdk_saou_field_get_message_link($entity) {
   $text = t($entity->getRestrictedUse(), array(), array('context' => 'bibdk_saou'));
   $link = array(
@@ -100,6 +116,9 @@ function bibdk_saou_field_get_message_link($entity) {
   return $link;
 }
 
+/** get a wrapper for dropdown message
+ * @return array
+ */
 function bibdk_saou_field_get_dropdown_wrapper() {
   return array(
     '#type' => 'container',
@@ -109,6 +128,9 @@ function bibdk_saou_field_get_dropdown_wrapper() {
   );
 }
 
+/** check if user is provider user, and favourite library is complete
+ * @return string; appropiate message for user
+ */
 function bibdk_saou_get_user_message() {
   if (!ding_user_is_provider_user()) {
     return bibdk_saou_link_to_login();
@@ -118,6 +140,10 @@ function bibdk_saou_get_user_message() {
   }
 }
 
+/** Get a render array to toggle
+ * @param $message; the message to display
+ * @return array; render array as expected by drupal_render
+ */
 function bibdk_saou_field_get_element_to_toggle($message) {
   $element = array();
   if (empty($message)) {
@@ -168,6 +194,10 @@ function bibdk_saou_link_to_soau_ressource($entity) {
   return $link;
 }
 
+/** Make a valid html id from given pid
+ * @param $pid; id for entity
+ * @return string; valid html id (no ':' and '_')
+ */
 function bibdk_saou_field_pid_to_selector($pid) {
   $pattern = array('/-/', '/:/');
   $replacement = array('_', '_');
@@ -176,6 +206,9 @@ function bibdk_saou_field_pid_to_selector($pid) {
 
 }
 
+/** Get a link to login
+ * @return string; rendered array
+ */
 function bibdk_saou_link_to_login() {
   $message = t('saou_log_in_to_accesss_ressource', array(), array('context' => 'bibdk_saou'));
   $path = 'user/login';
