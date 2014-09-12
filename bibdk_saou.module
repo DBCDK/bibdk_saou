@@ -1,33 +1,34 @@
 <?php
-module_load_include('inc','bibdk_saou'.'bibdk_saou.field');
-module_load_include('php','bibdk_saou'.'lib/SaouResponse_class');
+module_load_include('inc', 'bibdk_saou' . 'bibdk_saou.field');
+module_load_include('php', 'bibdk_saou' . 'lib/SaouResponse_class');
 require_once('bibdk_saou.field.inc');
 
 /**
  * Implements hook_menu
  * landing page for saou ajax request
  */
-function bibdk_saou_menu(){
+function bibdk_saou_menu() {
   $items['saou/ajax'] = array(
     'page callback' => 'bibdk_saou_ajax',
     'access callback' => TRUE,
     'file' => 'bibdk_saou.ajax.inc',
   );
+
   return $items;
 }
 
-
-function bibdk_saou_get_order_agency(){
+function bibdk_saou_get_order_agency() {
   // pre: user is logged in or we wouldn't be here
   $agencies = array();
-  if(module_exists('bibdk_favourite')){
+  if (module_exists('bibdk_favourite')) {
     $agencies = bibdk_favourite_get_favourites();
   }
-  if(empty($agencies)){
+  if (empty($agencies)) {
     return FALSE;
   }
   // first agency is order-agency
   $agency = reset($agencies);
+
   return $agency;
 }
 
@@ -35,7 +36,7 @@ function bibdk_saou_get_order_agency(){
  * @param $pid
  * return manifestation
  */
-function bibdk_saou_get_manifestation($pid){
+function bibdk_saou_get_manifestation($pid) {
   $result = ting_openformat_get_single($pid);
   $work = reset($result)->getManifestations();
   $manifestation = reset($work);

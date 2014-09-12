@@ -5,25 +5,29 @@
  * @param null $pid
  * @param null $url
  */
-function bibdk_saou_ajax($pid=NULL, $url=NULL){
+function bibdk_saou_ajax($pid = NULL, $url = NULL) {
   $pid = $_POST['pid'];
   $url = $_POST['url'];
 
-  if($url == 'NONE'){
+  // filmstriben -- molly cam
+  //$url = 'http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=2773333600';
+  //$pid = '870970-basis:27998798';
+
+  if ($url == 'NONE') {
     $url = NULL;
   }
   //use case: pid starts with 870970-basis and no relationurl is given
-  if(strpos($pid, '870970-basis') === 0 && empty($url)){
+  if (strpos($pid, '870970-basis') === 0 && empty($url)) {
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
     drupal_json_output($output);
     drupal_exit();
   }
-  elseif(!empty($url)){
+  elseif (!empty($url)) {
     $output = bibdk_saou_fetchLicenseByUrl($pid, $url);
     drupal_json_output($output);
     drupal_exit();
   }
-  else{
+  else {
     // default behoviour
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
     drupal_json_output($output);
@@ -36,10 +40,11 @@ function bibdk_saou_ajax($pid=NULL, $url=NULL){
  * @param $url
  * @return array, render array from output function
  */
-function bibdk_saou_fetchLicenseByUrl($pid, $url){
+function bibdk_saou_fetchLicenseByUrl($pid, $url) {
   $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
-  $response = open_saou_FetchLicenseByUrl($pid, $url, $agencyAndUserIds,  $agencyId);
+  $response = open_saou_FetchLicenseByUrl($pid, $url, $agencyAndUserIds, $agencyId);
   $saou = bibdk_saou_check_saou_response($response);
+
   return bibdk_saou_get_output_by_permission($saou, $pid, $url);
 }
 
@@ -47,13 +52,14 @@ function bibdk_saou_fetchLicenseByUrl($pid, $url){
  * @param $response
  * @return SaouResponse
  */
-function bibdk_saou_check_saou_response($response){
-  if($response){
+function bibdk_saou_check_saou_response($response) {
+  if ($response) {
     $saou = new SaouResponse($response);
   }
-  else{
+  else {
     $saou = new SaouResponse(new stdClass());
   }
+
   return $saou;
 }
 
@@ -61,10 +67,11 @@ function bibdk_saou_check_saou_response($response){
  * @param $pid
  * @return array, render array from output function
  */
-function bibdk_saou_ajax_fetchLicensByPid($pid){
+function bibdk_saou_ajax_fetchLicensByPid($pid) {
   $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
-  $response = open_saou_FetchLicenseByPid($pid,$agencyAndUserIds,  $agencyId);
+  $response = open_saou_FetchLicenseByPid($pid, $agencyAndUserIds, $agencyId);
   $saou = bibdk_saou_check_saou_response($response);
+
   return bibdk_saou_get_output_by_permission($saou, $pid);
 }
 
@@ -74,16 +81,23 @@ function bibdk_saou_ajax_fetchLicensByPid($pid){
  * @param $agencyId NOTICE by reference
  * @return array agencyAndUserId => [agencyId, userId]
  */
-function bibdk_saout_get_agency_and_userids(&$agencyId){
+function bibdk_saout_get_agency_and_userids(&$agencyId) {
   $agencyAndUserIds = array();
   $agency = bibdk_saou_get_order_agency();
-  if(!empty($agency)){
+  if (!empty($agency)) {
     $agencyId = $agency->getAgencyId();
     // this is the correct array
     //$agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
     // this is a hack to make filmstriben behave
-    $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>''));
+    $agencyAndUserIds = array(
+      'agencyAndUserId' => array(
+        'agencyId' => $agency->getAgencyId(),
+        'userId' => ''
+      )
+    );
+    // $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>710100, 'userId' =>''));
   }
+
   return $agencyAndUserIds;
 }
 
@@ -93,18 +107,18 @@ function bibdk_saout_get_agency_and_userids(&$agencyId){
  * @param string $pid
  * @return array, Render array az expected by drupal_render
  */
-function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
+function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL) {
   $permission = $saou->getlicenseInfo();
-  //$permission = $saou->get_remoteUserAccess();
-  if(empty($permission)){
-
+  if (empty($permission)) {
     // get the manifestation to display default link
     $manifestation = bibdk_saou_get_manifestation($pid);
     $txt = $manifestation->getInfotext();
     $url = $manifestation->getSingleAccessUrl();
 
     $value['accessUrl'] = current($url);
-    $value['accessUrlDisplay'] =  t('bibdk_saou_no_license',array(),array('context'=>'bibdk_saou'));
+    $code = $saou->get_responseCode();
+    $message = isset($code) ? $code : 'internal error: malformed answer from saou';
+    $value['accessUrlDisplay'] = $message;
 
     $element[] = $value;
     $link = _ting_openformat_parse_element($element);
@@ -114,37 +128,59 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
     $output = bibdk_saou_field_get_element_to_toggle($message);
     bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
     $html = drupal_render($output);
-    $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
-   // $output = array('error'=>$markup, 'selector' => bibdk_saou_field_pid_to_selector($pid));
+    $output = array(
+      'error' => $html,
+      'selector' => bibdk_saou_field_pid_to_selector($pid)
+    );
+
+    // $output = array('error'=>$markup, 'selector' => bibdk_saou_field_pid_to_selector($pid));
     return $output;
   }
-  if($permission){
+  if ($permission) {
     // permission is ok
     $proxy = $saou->get_proxyLink();
-    if(!empty($proxy)){
+    if (!empty($proxy)) {
       $link = $proxy;
+    }
+    if (empty($link)) {
+      $link = $saou->get_link();
     }
 
     $remote_user_access = $saou->get_remoteUserAccess();
-    if($link && $remote_user_access){
+    if ($link && $remote_user_access) {
       $output = bibdk_saou_ajax_get_proxylink($link, $pid);
-      return array('redirect'=>$output,'selector' => bibdk_saou_field_pid_to_selector($pid),'error'=>'');
+
+      return array(
+        'redirect' => $output,
+        'selector' => bibdk_saou_field_pid_to_selector($pid),
+        'error' => ''
+      );
     }
-    elseif($link && empty($remote_user_access)) {
-      $message = t('bibdk_saou_walkin_access',array(),array('context'=>'bibdk_saou'));
-      $output = bibdk_saou_field_get_element_to_toggle($message);
+    elseif ($link && empty($remote_user_access)) {
+
+      $message = t('bibdk_saou_walkin_access', array(), array('context' => 'bibdk_saou'));
+      $url = l($message, $link, array('attributes' => array('target' => '_blank')));
+      $output = bibdk_saou_field_get_element_to_toggle($url);
       bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
       $html = drupal_render($output);
-      $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
+      $output = array(
+        'error' => $html,
+        'selector' => bibdk_saou_field_pid_to_selector($pid)
+      );
+
       return $output;
     }
-    else{
+    else {
       // this is an error from saou service.
       $message = 'internal error: no link to proxy';
       $output = bibdk_saou_field_get_element_to_toggle($message);
       bibdk_saou_remove_hidden_class($output['container']['#attributes']['class']);
       $html = drupal_render($output);
-      $output = array('error'=>$html, 'selector' => bibdk_saou_field_pid_to_selector($pid));
+      $output = array(
+        'error' => $html,
+        'selector' => bibdk_saou_field_pid_to_selector($pid)
+      );
+
       return $output;
     }
   }
@@ -153,9 +189,9 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL){
 /** Remove hidden class for toggle element. It should be shown after ajax callback
  * @param array $classes
  */
-function bibdk_saou_remove_hidden_class(array &$classes){
-  foreach($classes as $key => $class){
-    if($class == 'hidden'){
+function bibdk_saou_remove_hidden_class(array &$classes) {
+  foreach ($classes as $key => $class) {
+    if ($class == 'hidden') {
       unset($classes[$key]);
       break;
     }
@@ -164,21 +200,25 @@ function bibdk_saou_remove_hidden_class(array &$classes){
 
 /** Define a link to proxy.
  *
- * @param string $link, url
+ * @param string $link , url
  * @param string $pid
  * @return string,html as ouptput by drupal_render
  */
-function bibdk_saou_ajax_get_proxylink($link, $pid){
-  $message =  t('bibdk_saou_click_here_for_access',array(),array('context'=>'bibdk_saou'));
+function bibdk_saou_ajax_get_proxylink($link, $pid) {
+  $message = t('bibdk_saou_click_here_for_access', array(), array('context' => 'bibdk_saou'));
   $proxy_link = array(
     '#theme' => 'link',
     '#text' => $message,
     '#path' => $link,
     '#options' => array(
-      'attributes' => array('target'=>'_blank', 'id' => bibdk_saou_field_pid_to_selector($pid)),
+      'attributes' => array(
+        'target' => '_blank',
+        'id' => bibdk_saou_field_pid_to_selector($pid)
+      ),
       'html' => FALSE,
       'absolute => TRUE',
     ),
   );
+
   return drupal_render($proxy_link);
 }
