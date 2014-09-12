@@ -17,6 +17,9 @@ function bibdk_saou_menu() {
   return $items;
 }
 
+/** Get order agency from bibdk_favourites
+ * @return bool|mixed
+ */
 function bibdk_saou_get_order_agency() {
   // pre: user is logged in or we wouldn't be here
   $agencies = array();
