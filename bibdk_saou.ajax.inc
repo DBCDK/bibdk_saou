@@ -8,6 +8,7 @@
 function bibdk_saou_ajax($pid = NULL, $url = NULL) {
   $pid = $_POST['pid'];
   $url = $_POST['url'];
+  $alt_pid = $_POST['altpid'];
 
   // filmstriben -- molly cam
   //$url = 'http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=2773333600';
@@ -16,6 +17,9 @@ function bibdk_saou_ajax($pid = NULL, $url = NULL) {
   if ($url == 'NONE') {
     $url = NULL;
   }
+  if ($alt_pid == 'NONE') {
+    $alt_pid = NULL;
+  }
   //use case: pid starts with 870970-basis and no relationurl is given
   if (strpos($pid, '870970-basis') === 0 && empty($url)) {
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
@@ -23,7 +27,7 @@ function bibdk_saou_ajax($pid = NULL, $url = NULL) {
     drupal_exit();
   }
   elseif (!empty($url)) {
-    $output = bibdk_saou_fetchLicenseByUrl($pid, $url);
+    $output = bibdk_saou_fetchLicenseByUrl($pid, $url, $alt_pid);
     drupal_json_output($output);
     drupal_exit();
   }
@@ -40,9 +44,9 @@ function bibdk_saou_ajax($pid = NULL, $url = NULL) {
  * @param $url
  * @return array, render array from output function
  */
-function bibdk_saou_fetchLicenseByUrl($pid, $url) {
+function bibdk_saou_fetchLicenseByUrl($pid, $url, $alt_pid = NULL) {
   $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
-  $response = open_saou_FetchLicenseByUrl($pid, $url, $agencyAndUserIds, $agencyId);
+  $response = open_saou_FetchLicenseByUrl($pid, $url, $agencyAndUserIds, $agencyId, $alt_pid);
   $saou = bibdk_saou_check_saou_response($response);
 
   return bibdk_saou_get_output_by_permission($saou, $pid, $url);

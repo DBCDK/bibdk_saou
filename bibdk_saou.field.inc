@@ -176,13 +176,8 @@ function bibdk_saou_link_to_soau_ressource($entity) {
     $uri = $entity->getRelationUri();
   }
 
+  $pid = $entity->id;
   $linkCollectionIdentifier = $entity->getlinkCollectionIdentifier();
-  if (!empty($linkCollectionIdentifier)) {
-    $pid = $linkCollectionIdentifier;
-  }
-  else {
-    $pid = $entity->id;
-  }
 
   $link = array(
     '#theme' => 'link',
@@ -192,6 +187,7 @@ function bibdk_saou_link_to_soau_ressource($entity) {
       'attributes' => array(
         'data-pid' => $pid,
         'data-url' => ($uri) ? $uri : 'NONE',
+        'data-alt-pid' => ($linkCollectionIdentifier) ? $linkCollectionIdentifier : 'NONE',
         'class' => array('soau-ressource-link'),
         'id' => 'bibdk_saou_' . bibdk_saou_field_pid_to_selector($pid),
       ),

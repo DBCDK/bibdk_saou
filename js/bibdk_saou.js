@@ -18,6 +18,7 @@
     link.append('<span class="ajax-progress"><span class="throbber" style="margin-top:-3px"></span></span>');
     var pid = link.attr('data-pid');
     var url = link.attr('data-url');
+    var alt_pid = link.attr('data-alt-pid');
     var destination = link.attr('href');
 
     var request = $.ajax({
@@ -25,7 +26,8 @@
       type: 'POST',
       data: {
         pid: pid,
-        url: url
+        url: url,
+        altpid: alt_pid
       },
       dataType: 'json',
       success: Drupal.bibdkHandleSaou
