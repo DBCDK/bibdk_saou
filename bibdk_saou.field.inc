@@ -176,16 +176,24 @@ function bibdk_saou_link_to_soau_ressource($entity) {
     $uri = $entity->getRelationUri();
   }
 
+  $linkCollectionIdentifier = $entity->getlinkCollectionIdentifier();
+  if (!empty($linkCollectionIdentifier)) {
+    $pid = $linkCollectionIdentifier;
+  }
+  else {
+    $pid = $entity->id;
+  }
+
   $link = array(
     '#theme' => 'link',
     '#text' => $message,
     '#path' => $path,
     '#options' => array(
       'attributes' => array(
-        'data-pid' => $entity->id,
+        'data-pid' => $pid,
         'data-url' => ($uri) ? $uri : 'NONE',
         'class' => array('soau-ressource-link'),
-        'id' => 'bibdk_saou_' . bibdk_saou_field_pid_to_selector($entity->id),
+        'id' => 'bibdk_saou_' . bibdk_saou_field_pid_to_selector($pid),
       ),
       'html' => FALSE,
     ),
