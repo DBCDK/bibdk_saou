@@ -12,18 +12,14 @@
 class SaouResponse {
 
   private $response;
-  private $licenseInfo;
+  private $License;
   private $errorCode;
 
   /** Constructor
    * @param stdClass $response ; Response from SAOU webservice
    */
   public function __construct(stdClass $response) {
-
-    //  print_r($response);
-
     $this->response = $response;
-    $this->licenseInfo = isset($response->Licenses->License->licenseInfo) ? $response->Licenses->License->licenseInfo : NULL;
     $this->errorCode = isset($response->Licenses->ResponseStatus->responseCode) ? $response->Licenses->ResponseStatus->responseCode : NULL;
   }
 
@@ -31,18 +27,30 @@ class SaouResponse {
     return $this->response;
   }
 
-  /** Get info for licenses
+  /** Get info for licenses, and set private member License
    * @return mixed; array licenseinfo if licenses are found; FALSE if not
    */
   public function getlicenseInfo() {
-    return isset($this->licenseInfo) ? $this->licenseInfo : FALSE;
+    if (!isset($this->response->Licenses)) {
+      return FALSE;
+    }
+    // there might be more than one license
+    if (is_array($this->response->Licenses->License)) {
+      // use the first license found
+      $this->License = current($this->response->Licenses->License);
+    }
+    else {
+      $this->License = isset($this->response->Licenses->License) ? $this->response->Licenses->License : FALSE;
+    }
+    // check if licenseinfo is set
+    return isset($this->License->licenseInfo) ? $this->License->licenseInfo : FALSE;
   }
 
   /** Get ipAccess for license
    * @return bool
    */
   public function get_ipAccess() {
-    return isset($this->licenseInfo->ipAccess) ? $this->licenseInfo->ipAccess : FALSE;
+    return isset($this->License->licenseInfo->ipAccess) ? $this->License->licenseInfo->ipAccess : FALSE;
   }
 
   /** Get remote user access
@@ -56,14 +64,14 @@ class SaouResponse {
    * @return mixed; string link if set; FALSE if not
    */
   public function get_link() {
-    return isset($this->response->Licenses->License->linkResponseType->link) ? $this->response->Licenses->License->linkResponseType->link : FALSE;
+    return isset($this->License->linkResponseType->link) ? $this->License->linkResponseType->link : FALSE;
   }
 
   /** Get proxy link to ressource
    * @return mixed; string proxyurl if given; FALSE if not
    **/
   public function get_proxyLink() {
-    return isset ($this->response->Licenses->License->linkResponseType->proxyLink) ? $this->response->Licenses->License->linkResponseType->proxyLink : FALSE;
+    return isset ($this->License->linkResponseType->proxyLink) ? $this->License->linkResponseType->proxyLink : FALSE;
   }
 
   public function get_responseCode() {
