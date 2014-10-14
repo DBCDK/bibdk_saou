@@ -92,7 +92,7 @@ function bibdk_saout_get_agency_and_userids(&$agencyId) {
     $agencyAndUserIds = array(
       'agencyAndUserId' => array(
         'agencyId' => $agency->getAgencyId(),
-        'userId' => ''
+        'userId' => $agency->getUserId(),
       )
     );
     // $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>710100, 'userId' =>''));
