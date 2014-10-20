@@ -44,7 +44,7 @@ function bibdk_saou_field_formatter_view($entity_type, $entity, $field, $instanc
 /** get and check favourites for saou request.
  * @return string: empty if fvaourite is found and data complete; errormessage if not
  */
-function bibdk_soau_field_check_favourites() {
+function bibdk_soau_field_check_favourites($entity) {
   $favourites = bibdk_favourite_get_favourites();
   $message = '';
   if (empty($favourites)) {
@@ -52,8 +52,16 @@ function bibdk_soau_field_check_favourites() {
   }
   else {
     $fav = current($favourites);
+    dpm($fav);
+    $agencyId = $fav->getAgencyId();
     $userid = $fav->getUserId();
-    if (empty($userid)) {
+    dpm($agencyId);
+    // only handle agencyId that starts with 7 (public libraries)
+    if( strpos($agencyId, '7') !== 0 ) {
+      dpm('HEST');
+      $message = bibdk_saou_field_get_wrong_library_link($entity);
+    }
+    elseif (empty($userid)) {
       $message = t('bibdk_saou_incomplete_favorite_data', array(), array('context' => 'bibdk_saou'));
     }
   }
@@ -61,12 +69,38 @@ function bibdk_soau_field_check_favourites() {
   return $message;
 }
 
+function bibdk_saou_field_get_wrong_library_link($entity){
+  $message = t('bibdk_saou_unknown_library', array(), array('context' => 'bibdk_saou'));
+  $uri = $entity->getRemoteAccess();
+
+  if (empty($uri)) {
+    $uri = $entity->getRelationUri();
+  }
+
+  $pid = $entity->id;
+
+  $link = array(
+    '#theme' => 'link',
+    '#text' => $message,
+    '#path' => $uri,
+    '#options' => array(
+      'attributes' => array(
+        'data-pid' => $pid,
+        'id' => 'bibdk_saou_' . bibdk_saou_field_pid_to_selector($pid),
+      ),
+      'html' => FALSE,
+    ),
+  );
+
+  return drupal_render($link);
+}
+
 /** get a link to ressource.
  * @param $entity; the entity to handle
  * @return string; html to display
  */
 function bibdk_soau_field_get_link($entity) {
-  $message = bibdk_saou_get_user_message();
+  $message = bibdk_saou_get_user_message($entity);
 
   if (empty($message)) {
     $output['wrapper'] = bibdk_saou_field_get_dropdown_wrapper();
@@ -131,12 +165,12 @@ function bibdk_saou_field_get_dropdown_wrapper() {
 /** check if user is provider user, and favourite library is complete
  * @return string; appropiate message for user
  */
-function bibdk_saou_get_user_message() {
+function bibdk_saou_get_user_message($entity) {
   if (!ding_user_is_provider_user()) {
     return bibdk_saou_link_to_login();
   }
   else {
-    return bibdk_soau_field_check_favourites();
+    return bibdk_soau_field_check_favourites($entity);
   }
 }
 
