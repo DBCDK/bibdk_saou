@@ -52,13 +52,10 @@ function bibdk_soau_field_check_favourites($entity) {
   }
   else {
     $fav = current($favourites);
-    dpm($fav);
     $agencyId = $fav->getAgencyId();
     $userid = $fav->getUserId();
-    dpm($agencyId);
     // only handle agencyId that starts with 7 (public libraries)
     if( strpos($agencyId, '7') !== 0 ) {
-      dpm('HEST');
       $message = bibdk_saou_field_get_wrong_library_link($entity);
     }
     elseif (empty($userid)) {
