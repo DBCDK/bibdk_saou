@@ -89,17 +89,15 @@ function bibdk_saout_get_agency_and_userids(&$agencyId) {
   $agencyAndUserIds = array();
   $agency = bibdk_saou_get_order_agency();
   if (!empty($agency)) {
-    $agencyId = $agency->getAgencyId();
-    // this is the correct array
-    //$agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>$agency->getAgencyId(), 'userId' =>$agency->getUserId()));
-    // this is a hack to make filmstriben behave
+    // saou do NOT accept a branchid - get the mainId
+    $agencyId = $agency->getAgencyMainId();
+
     $agencyAndUserIds = array(
       'agencyAndUserId' => array(
-        'agencyId' => $agency->getAgencyId(),
+        'agencyId' => $agencyId,
         'userId' => $agency->getUserId(),
       )
     );
-    // $agencyAndUserIds = array('agencyAndUserId'=>array('agencyId'=>710100, 'userId' =>''));
   }
 
   return $agencyAndUserIds;
@@ -137,7 +135,6 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL) {
       'selector' => bibdk_saou_field_pid_to_selector($pid)
     );
 
-    // $output = array('error'=>$markup, 'selector' => bibdk_saou_field_pid_to_selector($pid));
     return $output;
   }
   if ($permission) {
@@ -161,7 +158,6 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL) {
       );
     }
     elseif ($link && empty($remote_user_access)) {
-
       $message = t('bibdk_saou_walkin_access', array(), array('context' => 'bibdk_saou'));
       $url = l($message, $link, array('attributes' => array('target' => '_blank')));
       $output = bibdk_saou_field_get_element_to_toggle($url);
