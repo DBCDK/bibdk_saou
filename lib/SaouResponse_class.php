@@ -75,6 +75,6 @@ class SaouResponse {
   }
 
   public function get_responseCode() {
-    return $this->errorCode;
+    return 'bibdk_saou_'.$this->errorCode;
   }
 }

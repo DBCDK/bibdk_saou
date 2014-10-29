@@ -10,11 +10,11 @@
 function bibdk_saou_ding_entity_fields() {
   $display_full = array(
     'default' => array(
-      'label' => 'hidden',
+      'label' => 'inline',
       'type' => 'default',
     ),
     'full' => array(
-      'label' => 'hidden',
+      'label' => 'inline:',
       'type' => 'default',
     ),
   );

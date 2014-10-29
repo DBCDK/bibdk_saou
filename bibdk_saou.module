@@ -45,5 +45,4 @@ function bibdk_saou_get_manifestation($pid) {
   $manifestation = reset($work);
 
   return $manifestation;
-
 }
