@@ -4,10 +4,7 @@
  *
  * Module file for this module - generel methods used across various files
  */
-
-module_load_include('inc', 'bibdk_saou' . 'bibdk_saou.field');
-module_load_include('php', 'bibdk_saou' . 'lib/SaouResponse_class');
-require_once('bibdk_saou.field.inc');
+include_once('bibdk_saou.field.inc');
 
 /**
  * Implements hook_menu().

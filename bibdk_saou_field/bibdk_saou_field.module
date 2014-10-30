@@ -1,5 +1,6 @@
 <?php
 /**
+ * @file
  * Field definition is moved to a seperate module in order to be able to disable
  * modules that implements the field.
  * see http://drupal.org/node/1285540

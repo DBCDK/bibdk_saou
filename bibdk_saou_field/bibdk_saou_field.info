@@ -2,6 +2,3 @@ name = Bibliotek.dk SAOU field
 description = Field info for link to ressources with restricted access
 package = Bibliotek.dk
 core = 7.x
-
-files[] = bibdk_saou_field.module
-dependencies[] = virtual_field

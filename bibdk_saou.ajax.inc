@@ -16,10 +16,6 @@ function bibdk_saou_ajax($pid = NULL, $url = NULL) {
   $url = check_plain($_POST['url']);
   $alt_pid = check_plain($_POST['altpid']);
 
-  // filmstriben -- molly cam
-  //$url = 'http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=2773333600';
-  //$pid = '870970-basis:27998798';
-
   if ($url == 'NONE') {
     $url = NULL;
   }
@@ -29,20 +25,16 @@ function bibdk_saou_ajax($pid = NULL, $url = NULL) {
   //use case: pid starts with 870970-basis and no relationurl is given
   if (strpos($pid, '870970-basis') === 0 && empty($url)) {
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
-    drupal_json_output($output);
-    drupal_exit();
   }
   elseif (!empty($url)) {
     $output = bibdk_saou_fetchLicenseByUrl($pid, $url, $alt_pid);
-    drupal_json_output($output);
-    drupal_exit();
   }
   else {
     // default behoviour
     $output = bibdk_saou_ajax_fetchLicensByPid($pid);
-    drupal_json_output($output);
-    drupal_exit();
   }
+  drupal_json_output($output);
+  drupal_exit();
 }
 
 /**
@@ -76,7 +68,7 @@ function bibdk_saou_check_saou_response($response) {
 }
 
 /**
- * Dp fetchLicenseByPid request, and pass response to output function.
+ * Do fetchLicenseByPid request, and pass response to output function.
  * @param $pid
  * @return array, render array from output function
  */
@@ -114,7 +106,7 @@ function bibdk_saout_get_agency_and_userids(&$agency_id) {
 }
 
 /**
- * Create the render arrays.
+ * Create the arrays to json output.
  *
  * @param SaouResponse object, $saou
  * @param string $pid
