@@ -5,7 +5,7 @@
  */
 
 /**
- * Implements hook_ding_entity_fields
+ * Implements hook_ding_entity_fields().
  */
 function bibdk_saou_ding_entity_fields() {
   $display_full = array(
@@ -39,7 +39,7 @@ function bibdk_saou_ding_entity_fields() {
 }
 
 /**
- * Implements hook_requirements()
+ * Implements hook_requirements().
  */
 function bibdk_saou_requirements($phase) {
   $requirements = array();
@@ -59,7 +59,7 @@ function bibdk_saou_requirements($phase) {
 
 /** Cleanup
  *
- * Implements hook_disable.
+ * Implements hook_disable().
  */
 function bibdk_saou_disable() {
   $fields = bibdk_saou_ding_entity_fields();
@@ -72,6 +72,6 @@ function bibdk_saou_disable() {
 /**
  * Remove field bibdk_saou_link. the link is implemented with a hook instead
  */
-/*function bibdk_saou_update_7002() {
+/* function bibdk_saou_update_7002() {
   field_delete_field('bibdk_saou_link');
 }*/

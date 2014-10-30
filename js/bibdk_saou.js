@@ -1,3 +1,8 @@
+//<?php
+/**
+ * @file javascript to support soau
+ */
+//?>
 (function($) {
 
   Drupal.bibdkHandleSaou = function(saou) {

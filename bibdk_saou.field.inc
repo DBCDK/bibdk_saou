@@ -41,7 +41,8 @@ function bibdk_saou_field_formatter_view($entity_type, $entity, $field, $instanc
   return $element;
 }
 
-/** get and check favourites for saou request.
+/**
+ * get and check favourites for saou request.
  * @return string: empty if fvaourite is found and data complete; errormessage if not
  */
 function bibdk_soau_field_check_favourites($entity) {
@@ -52,10 +53,10 @@ function bibdk_soau_field_check_favourites($entity) {
   }
   else {
     $fav = current($favourites);
-    $agencyId = $fav->getAgencyId();
+    $agency_id = $fav->getAgencyId();
     $userid = $fav->getUserId();
     // only handle agencyId that starts with 7 (public libraries)
-    if( strpos($agencyId, '7') !== 0 ) {
+    if (strpos($agency_id, '7') !== 0) {
       $message = bibdk_saou_field_get_wrong_library_link($entity);
     }
     elseif (empty($userid)) {
@@ -66,7 +67,12 @@ function bibdk_soau_field_check_favourites($entity) {
   return $message;
 }
 
-function bibdk_saou_field_get_wrong_library_link($entity){
+/**
+ * get a link stating that this is an unknown library
+ * @param $entity
+ * @return string
+ */
+function bibdk_saou_field_get_wrong_library_link($entity) {
   $message = t('bibdk_saou_unknown_library', array(), array('context' => 'bibdk_saou'));
   $uri = $entity->getRemoteAccess();
 
@@ -208,7 +214,7 @@ function bibdk_saou_link_to_soau_ressource($entity) {
   }
 
   $pid = $entity->id;
-  $linkCollectionIdentifier = $entity->getlinkCollectionIdentifier();
+  $link_collection_identifier = $entity->getlinkCollectionIdentifier();
 
   $link = array(
     '#theme' => 'link',
@@ -218,7 +224,7 @@ function bibdk_saou_link_to_soau_ressource($entity) {
       'attributes' => array(
         'data-pid' => $pid,
         'data-url' => ($uri) ? $uri : 'NONE',
-        'data-alt-pid' => ($linkCollectionIdentifier) ? $linkCollectionIdentifier : 'NONE',
+        'data-alt-pid' => ($link_collection_identifier) ? $link_collection_identifier : 'NONE',
         'class' => array('soau-ressource-link'),
         'id' => 'bibdk_saou_' . bibdk_saou_field_pid_to_selector($pid),
       ),

@@ -1,14 +1,20 @@
 <?php
 
-/** Ajax page callback
+/**
+ * @file
+ * This file handles ajax calls to saou webservice
+ */
+
+/**
+ * Ajax page callback
  *
  * @param null $pid
  * @param null $url
  */
 function bibdk_saou_ajax($pid = NULL, $url = NULL) {
-  $pid = $_POST['pid'];
-  $url = $_POST['url'];
-  $alt_pid = $_POST['altpid'];
+  $pid = check_plain($_POST['pid']);
+  $url = check_plain($_POST['url']);
+  $alt_pid = check_plain($_POST['altpid']);
 
   // filmstriben -- molly cam
   //$url = 'http://www.filmstriben.dk/fjernleje/filmdetails.aspx?id=2773333600';
@@ -39,20 +45,22 @@ function bibdk_saou_ajax($pid = NULL, $url = NULL) {
   }
 }
 
-/** Do fetchLicenseByUrl request and pass response to output function
+/**
+ * Do fetchLicenseByUrl request and pass response to output function
  * @param $pid
  * @param $url
  * @return array, render array from output function
  */
 function bibdk_saou_fetchLicenseByUrl($pid, $url, $alt_pid = NULL) {
-  $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
-  $response = open_saou_FetchLicenseByUrl($pid, $url, $agencyAndUserIds, $agencyId, $alt_pid);
+  $agency_and_user_ids = bibdk_saout_get_agency_and_userids($agency_id);
+  $response = open_saou_FetchLicenseByUrl($pid, $url, $agency_and_user_ids, $agency_id, $alt_pid);
   $saou = bibdk_saou_check_saou_response($response);
 
   return bibdk_saou_get_output_by_permission($saou, $pid, $url);
 }
 
-/** Check response. If ok create a responseobject if not initialize with empty object
+/**
+ * Check response. If ok create a responseobject if not initialize with empty object
  * @param $response
  * @return SaouResponse
  */
@@ -67,43 +75,46 @@ function bibdk_saou_check_saou_response($response) {
   return $saou;
 }
 
-/** Dp fetchLicenseByPid request, and pass response to output function.
+/**
+ * Dp fetchLicenseByPid request, and pass response to output function.
  * @param $pid
  * @return array, render array from output function
  */
 function bibdk_saou_ajax_fetchLicensByPid($pid) {
-  $agencyAndUserIds = bibdk_saout_get_agency_and_userids($agencyId);
-  $response = open_saou_FetchLicenseByPid($pid, $agencyAndUserIds, $agencyId);
+  $agency_and_user_ids = bibdk_saout_get_agency_and_userids($agency_id);
+  $response = open_saou_FetchLicenseByPid($pid, $agency_and_user_ids, $agency_id);
   $saou = bibdk_saou_check_saou_response($response);
 
   return bibdk_saou_get_output_by_permission($saou, $pid);
 }
 
-/** get orderagency from bibdk_favourites.
+/**
+ * get orderagency from bibdk_favourites.
  * set given agencyId by reference
  *
- * @param $agencyId NOTICE by reference
+ * @param $agency_id NOTICE by reference
  * @return array agencyAndUserId => [agencyId, userId]
  */
-function bibdk_saout_get_agency_and_userids(&$agencyId) {
-  $agencyAndUserIds = array();
+function bibdk_saout_get_agency_and_userids(&$agency_id) {
+  $agency_and_user_ids = array();
   $agency = bibdk_saou_get_order_agency();
   if (!empty($agency)) {
     // saou do NOT accept a branchid - get the mainId
-    $agencyId = $agency->getAgencyMainId();
+    $agency_id = $agency->getAgencyMainId();
 
-    $agencyAndUserIds = array(
+    $agency_and_user_ids = array(
       'agencyAndUserId' => array(
-        'agencyId' => $agencyId,
+        'agencyId' => $agency_id,
         'userId' => $agency->getUserId(),
       )
     );
   }
 
-  return $agencyAndUserIds;
+  return $agency_and_user_ids;
 }
 
-/** Create the render arrays.
+/**
+ * Create the render arrays.
  *
  * @param SaouResponse object, $saou
  * @param string $pid
@@ -186,7 +197,8 @@ function bibdk_saou_get_output_by_permission($saou, $pid, $url = NULL) {
   }
 }
 
-/** Remove hidden class for toggle element. It should be shown after ajax callback
+/**
+ * Remove hidden class for toggle element. It should be shown after ajax callback
  * @param array $classes
  */
 function bibdk_saou_remove_hidden_class(array &$classes) {
@@ -198,7 +210,8 @@ function bibdk_saou_remove_hidden_class(array &$classes) {
   }
 }
 
-/** Define a link to proxy.
+/**
+ * Define a link to proxy.
  *
  * @param string $link , url
  * @param string $pid

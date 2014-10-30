@@ -1,6 +1,9 @@
 <?php
 
-/** Class to handle response from saou webservice.
+/**
+ * @file
+ *
+ * Class to handle response from saou webservice.
  * Basically you get two kinds of responses
  *
  * Either yóu get <responseCode>OK_NO_LICENSES</responseCode> which means
@@ -8,7 +11,7 @@
  *
  * Or you get <Licenses> which means that one or more licenses are returned.
  *
- **/
+ */
 class SaouResponse {
 
   private $response;
@@ -23,11 +26,16 @@ class SaouResponse {
     $this->errorCode = isset($response->Licenses->ResponseStatus->responseCode) ? $response->Licenses->ResponseStatus->responseCode : NULL;
   }
 
+  /**
+   * Get the response
+   * @return stdClass
+   */
   public function get_response() {
     return $this->response;
   }
 
-  /** Get info for licenses, and set private member License
+  /**
+   * Get info for licenses, and set private member License
    * @return mixed; array licenseinfo if licenses are found; FALSE if not
    */
   public function getlicenseInfo() {
@@ -46,35 +54,43 @@ class SaouResponse {
     return isset($this->License->licenseInfo) ? $this->License->licenseInfo : FALSE;
   }
 
-  /** Get ipAccess for license
+  /**
+   * Get ipAccess for license
    * @return bool
    */
   public function get_ipAccess() {
     return isset($this->License->licenseInfo->ipAccess) ? $this->License->licenseInfo->ipAccess : FALSE;
   }
 
-  /** Get remote user access
+  /**
+   * Get remote user access
    * @return mixed; BOOL if license is given; NULL if not
    */
   public function get_remoteUserAccess() {
     return isset($this->getlicenseInfo()->remoteUserAccess) ? $this->getlicenseInfo()->remoteUserAccess : NULL;
   }
 
-  /** Get link to ressource
+  /**
+   * Get link to ressource
    * @return mixed; string link if set; FALSE if not
    */
   public function get_link() {
     return isset($this->License->linkResponseType->link) ? $this->License->linkResponseType->link : FALSE;
   }
 
-  /** Get proxy link to ressource
+  /**
+   * Get proxy link to ressource
    * @return mixed; string proxyurl if given; FALSE if not
-   **/
+   */
   public function get_proxyLink() {
-    return isset ($this->License->linkResponseType->proxyLink) ? $this->License->linkResponseType->proxyLink : FALSE;
+    return isset($this->License->linkResponseType->proxyLink) ? $this->License->linkResponseType->proxyLink : FALSE;
   }
 
+  /**
+   * Get the repoonse code
+   * @return string
+   */
   public function get_responseCode() {
-    return 'bibdk_saou_'.$this->errorCode;
+    return 'bibdk_saou_' . $this->errorCode;
   }
 }
