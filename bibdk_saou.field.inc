@@ -144,7 +144,8 @@ function bibdk_saou_field_get_message_link($entity) {
       'attributes' => array(
         'data-pid' => $entity->id,
         'class' => array('dropdown-toggle'),
-        'id' => 'bibdk_saou_' . $entity->id,
+        //'id' => 'bibdk_saou_' . $entity->id,
+        'id' => 'bibdk_saou_' . bibdk_saou_field_pid_to_selector($entity->id),
       ),
       'html' => FALSE,
     ),
