@@ -29,7 +29,7 @@ function bibdk_saou_ding_entity_fields() {
       ),
       'instance' => array(
         'ding_entity_type' => 'bibdkManifestation',
-        'label' => t('Link to saou ressources', array(), array('context' => 'bibdk_saou)),
+        'label' => t('Link to saou ressources', array(), array('context' => 'bibdk_saou')),
         'bundle' => 'bibdkManifestation',
         'entity_type' => 'bibdkManifestation',
         'display' => $display_full,
